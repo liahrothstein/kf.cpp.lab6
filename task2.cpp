@@ -1,77 +1,99 @@
 #include <iostream>
 #include <cmath>
-#include <string>
 
 using namespace std;
 
 class Circle {
 private:
-    double x;
-    double y;
-    double radius;
+    double xVal;      // Координата центра X
+    double yVal;      // Координата центра Y
+    double rVal;      // Радиус окружности
 
 public:
-    // Конструктор по умолчанию с параметрами
-    Circle(double xVal = 0.0, double yVal = 0.0, double rVal = 0.0)
-        : x(xVal), y(yVal), radius(abs(rVal)) {}
+    // --- КОНСТРУКТОРЫ ---
+    Circle() : xVal(0.0), yVal(0.0), rVal(1.0) {}
 
-    // Метод для удобного вывода объекта
-    void print(const string& name) const {
-        cout << name << ": Центр(" << x << ", " << y 
-                  << "), Радиус = " << radius << "\n";
+    Circle(double x, double y, double r) : xVal(x), yVal(y) {
+        rVal = (r >= 0) ? r : 0;
     }
 
-    // Сложение объектов (складываются координаты и радиусы)
+    // --- СВОЙСТВА (Getters / Setters) ---
+    double X() const { return xVal; }
+    void X(double value) { xVal = value; }
+
+    double Y() const { return yVal; }
+    void Y(double value) { yVal = value; }
+
+    double Radius() const { return rVal; }
+    void Radius(double value) {
+        if (value >= 0) rVal = value;
+    }
+
+    // --- МЕТОДЫ ---
+    void print() const {
+        cout << "Центр(" << xVal << ", " << yVal << "), R = " << rVal;
+    }
+
+    // --- ПЕРЕГРУЗКА АРИФМЕТИЧЕСКИХ ОПЕРАЦИЙ ---
+
+    // Сложение объектов: T1 + T2
     Circle operator+(const Circle& other) const {
-        return Circle(x + other.x, y + other.y, radius + other.radius);
+        return Circle(this->xVal, this->yVal, this->rVal + other.rVal);
     }
 
-    // Вычитание объектов (координаты вычитаются, радиус берется по модулю, чтобы не был < 0)
+    // Вычитание объектов: T1 - T2
     Circle operator-(const Circle& other) const {
-        return Circle(x - other.x, y - other.y, abs(radius - other.radius));
+        double newRadius = this->rVal - other.rVal;
+        return Circle(this->xVal, this->yVal, newRadius);
     }
 
-    // Умножение на вещественное число СПРАВА (Circle * double)
-    Circle operator*(double scalar) const {
-        return Circle(x * scalar, y * scalar, radius * abs(scalar));
+    // Умножение на число справа: T1 * number
+    Circle operator*(double num) const {
+        return Circle(this->xVal, this->yVal, this->rVal * num);
     }
 
-    // Умножение на вещественное число СЛЕВА (double * Circle)
-    // Реализуется через дружественную функцию, так как левый операнд не является объектом класса
-    friend Circle operator*(double scalar, const Circle& c) {
-        return c * scalar; // используем уже написанный оператор "справа"
+    /*
+     Умножение на число слева: number * T1
+     Используется дружественная функция (friend), так как левый операнд типа double
+    */
+    friend Circle operator*(double num, const Circle& c) {
+        return Circle(c.xVal, c.yVal, c.rVal * num);
     }
 };
 
 int main() {
     cout << "Программа выполняет: сложения объектов, вычитания объектов и умножения объектов на вещественное число справа и слева" << endl;
 
-    cout << "\nИсполнитель: Новиков Д. А." << endl;
+    cout << "Исполнитель: Новиков Д. А." << endl;
     cout << "Вариант: №14\n" << endl;
 
-    // Создание трех исходных объекова с произвольными параметрами
-    Circle T1(1.0, 1.0, 5.0);
-    Circle T2(2.0, -2.0, 3.0);
-    Circle T3(0.0, 0.0, 10.0);
+    // Создаем три исходных объекта T1, T2, T3 с произвольными параметрами
+    Circle T1(0.0, 0.0, 5.0);
+    Circle T2(1.0, 2.0, 3.0);
+    Circle T3(-1.0, -1.0, 2.0);
 
-    cout << "--- Исходные объекты ---\n";
-    T1.print("T1");
-    T2.print("T2");
-    T3.print("T3");
-    cout << "\n";
+    cout << ">>> ИСХОДНЫЕ ОБЪЕКТЫ <<<" << endl;
+    cout << "T1: "; T1.print(); cout << endl;
+    cout << "T2: "; T2.print(); cout << endl;
+    cout << "T3: "; T3.print(); cout << endl;
 
-    // Вычисления новых объектов
+    cout << "\n>>> ВЫЧИСЛЕНИЯ <<<" << endl;
+
+    // Формула: T4 = T1 + T2
     Circle T4 = T1 + T2;
-    Circle T5 = T1 - T2;
-    Circle T6 = 2.0 * T1 + T2 * 3.0;
-    Circle T7 = 2.0 * T1 - 3.0 * T2 + T3;
+    cout << "T4 (T1 + T2)         = "; T4.print(); cout << endl;
 
-    cout << "--- Результаты вычислений ---\n";
-    T4.print("T4 (T1 + T2)");
-    T5.print("T5 (T1 - T2)");
-    T6.print("T6 (2*T1 + T2*3)");
-    T7.print("T7 (2*T1 - 3*T2 + T3)");
-    cout << "\n";
+    // Формула: T5 = T1 - T2
+    Circle T5 = T1 - T2;
+    cout << "T5 (T1 - T2)         = "; T5.print(); cout << endl;
+
+    // Формула: T6 = 2 * T1 + T2 * 3
+    Circle T6 = 2 * T1 + T2 * 3;
+    cout << "T6 (2*T1 + T2*3)     = "; T6.print(); cout << endl;
+
+    // Формула: T7 = 2 * T1 - 3 * T2 + T3
+    Circle T7 = 2 * T1 - 3 * T2 + T3;
+    cout << "T7 (2*T1 - 3*T2 + T3) = "; T7.print(); cout << endl;
 
     return 0;
 }
